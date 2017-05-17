@@ -78,7 +78,6 @@ public class MainActivity extends Activity {
                         Log.v(TAG, "onException: "+dexFile+"; message: "+exception.getMessage());
                     }
                 });
-
     }
 
     private void prepareFile(File fileToCreate){

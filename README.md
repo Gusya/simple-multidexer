@@ -9,28 +9,63 @@ compile 'com.gusya.mv:simple-multidexer:1.0.0'
 ```
 
 Code:
-Copy `SimpleAdId.java` from library module into your project or build this project as jar\aar file.
+build simple-multidexer module as jar/aar dependency
 
 ## Usage
 
-Simply invoke static `SimpleAdId.getAdInfo` method while supplying application context and a listener object.
-Be aware that listener's methods will be invoked on UI thread.
+### Prepare list of DEX files
+
+Define a String array that points to DEX files. DEX files also can be packed into JAR\APK files.
+SimpleMultidexer searches for provided files in some predefined locations:
+* assets folder
+* app's private 'files' directory
+* app's private 'cache' directory
+* by absolute path
+* by package name (you can use some package name and if it is installed on the same device, you'll get it's classes)
+
+For example:
+```java
+String[] dexes = {
+                /*from assets*/sampleJar,
+                /*from getFilesDir()*/"from-files-dir.jar",
+                /*from getCacheDir()*/"from-cache-dir.jar",
+                /*absolute path*/st4AbsolutePath,
+                /*from package name*/"com.android.calculator2"};
+```
+
+### Call DEX loading synchronously
+
+Simply invoke static `SimpleMultidexer.loadDex(Activity, String[])`
+All DEX files will be loaded on Activity's thread.
 
 ```java
-SimpleAdId.getAdInfo(getApplicationContext(), new SimpleAdId.SimpleAdListener() {
+SimpleMultiDexer.loadDex(this, dexes);
+```
 
-            @Override
-            public void onSuccess(SimpleAdId.AdIdInfo info) {
-		String adId = info.getAdId();
-		boolean adTrackingEnabled = info.isAdTrackingEnabled();	
-            }
+### or asynchronously
 
-            @Override
-            public void onException(Exception exception) {
-		Log.e("SimpleAdId", exception.getMessage());
-		exception.printStackTrace();	
-            }
-        })
+Simply invoke static `SimpleMultidexer.loadDexAsync(Context, String[], SimpleMultidexer.Callback)`
+All DEX files will be loaded on a separate thread and you will receive callbacks with results.
+
+```java
+SimpleMultiDexer.loadDexAsync(getApplicationContext(), dexes,
+                new SimpleMultiDexer.Callback() {
+
+                    @Override
+                    public void onLoad(String dexFile) {
+                        // dexFile was successfully loaded
+                    }
+
+                    @Override
+                    public void onLoadAll() {
+                        // dex files loading has finished
+                    }
+
+                    @Override
+                    public void onException(Exception exception, String dexFile) {
+			// exception occured while loading dexFile
+                    }
+                });
 ```
 
 # License
