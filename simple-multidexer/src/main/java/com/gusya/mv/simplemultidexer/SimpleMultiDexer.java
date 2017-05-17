@@ -2,7 +2,6 @@ package com.gusya.mv.simplemultidexer;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.NonNull;
 
 import com.gusya.mv.simplemultidexer.loader.Loader;
 
@@ -38,8 +37,8 @@ public class SimpleMultiDexer {
 
         /**
          * When DEX file processing raised and exception
-         * @param exception
-         * @param dexFile
+         * @param exception Exception raised at processing time
+         * @param dexFile DEX file
          */
         void onException(Exception exception, String dexFile);
 
@@ -64,11 +63,11 @@ public class SimpleMultiDexer {
      * This call is performed on separate thread, so callback methods will be called also on separate thread
      * </p>
      * @param context Application context
-     * @param dexFiles
-     * @param callback
+     * @param dexFiles Array of dex files and package names
+     * @param callback Client's callback instance
      */
-    public static void loadDexAsync(@NonNull final Context context, @NonNull final String[] dexFiles,
-                                    @NonNull final SimpleMultiDexer.Callback callback){
+    public static void loadDexAsync(final Context context, final String[] dexFiles,
+                                    final SimpleMultiDexer.Callback callback){
         final Context appContext = context.getApplicationContext();
         new Thread(new Runnable() {
             @Override
@@ -87,7 +86,7 @@ public class SimpleMultiDexer {
      * @param activity Activity
      * @param dexFiles List of dex files, along with their extensions
      */
-    public static void loadDex(@NonNull final Activity activity, @NonNull final String[] dexFiles) {
+    public static void loadDex(final Activity activity, final String[] dexFiles) {
 
         activity.runOnUiThread(new Runnable() {
             public void run() {
@@ -112,7 +111,7 @@ public class SimpleMultiDexer {
         });
     }
 
-    private static void loadMultipleDexFiles(@NonNull Context context, @NonNull String[] dexFiles, @NonNull Callback callback){
+    private static void loadMultipleDexFiles(Context context, String[] dexFiles, Callback callback){
         for (String dexFile : dexFiles) {
             try {
                 Loader loader = Loader.Factory.createLoader(context, dexFile);
