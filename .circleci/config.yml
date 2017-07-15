@@ -16,9 +16,6 @@ jobs:
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
-          environment:
-            bintray.user: user
-            bintray.apikey: 1234
       - save_cache:
           paths:
             - ~/.gradle
@@ -31,3 +28,9 @@ jobs:
           destination: reports
       - store_test_results:
           path: app/build/test-results
+      - run:
+          name: Build debug apk
+          command: ./gradlew :app:assembleDebug
+      - store_artifacts:
+          path: app/build/outputs/apk/app-debug.apk
+          destination: apk
